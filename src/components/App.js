@@ -1,24 +1,54 @@
+import React, {useState ,useEffect} from "react";
 
+import { v4 as uuid } from "uuid";
 import './App.css';
-
+import ContactList from "./ContactList" ;
+import AddContact from "./AddContact";
+import Header from "./Header";
+// import ContactCard from "./ContactCard";
 function App() {
+  const LOCAL_STORAGE_KEY ="contacts";
+const [contacts, setContacts]=useState([]);
+
+const addContactHandler =(contact)=>{
+  console.log(contact);
+  setContacts([...contacts,{id: uuid(), ...contact}]);
+};
+
+const removeContactHandler =(id)=>{
+  const newContactList =contacts.filter((contact)=>{
+    return contact.id !== id;
+  });
+  setContacts(newContactList);
+}
+useEffect(() => {
+  const retriveContacts = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
+  if (retriveContacts) setContacts(retriveContacts);
+}, []);
+
+//later way to do tht
+// useEffect(() => {
+//   const retriveContacts = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
+//   if (retriveContacts) setContacts(retriveContacts);
+// }, []);
+
+useEffect(() => {
+  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(contacts));
+}, [contacts]);
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        {/* <img src={logo} className="App-logo" alt="logo" /> */}
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+   <div className="ui container">
+ 
+    <Header/>
+    
+    
+   <AddContact addContactHandler={addContactHandler}/>
+   <ContactList contacts={contacts} getContactId={removeContactHandler}/>
+
+    
+ 
+   </div>
   );
 }
 
